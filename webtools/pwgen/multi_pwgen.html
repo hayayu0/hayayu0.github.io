@@ -1,13 +1,15 @@
 ﻿<!doctype html>
 <meta charset="utf-8">
 <title>Multi Password Generator</title>
-<!-- v1.1.0   Created by hayayu0  2018/04/04 -->
+<!-- v1.1.1   Created by hayayu0  2018/04/04 -->
 <style>
 body{ font-weight:bold; }
 .fontmono{ font-family:monospace; }
 .mleft20{ margin-left:20px; }
 #pwsettings{ background-color:#fafaf7; }
-.nosel{ -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; /* future user-select:none; */ }
+.pw-each{ padding-top:3px; padding-bottom:4px; }
+.line-no{ -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; /* future user-select:none; */ color:lightgray; margin-right:10px; }
+.pw-eachstr{ border:solid 1px lightgray; padding:3px; }
 </style>
 <script>
 'use strict';
@@ -30,7 +32,7 @@ function onPwGenBtnClk(n){
 
 	for(var pwn=0; pwn<multipwn; pwn++)
 	{
-		multipw += "<div style='padding-top:3px; padding-bottom:4px;'><span class='nosel' style='color:lightgray; margin-right:10px;'>" + ("\u00A0\u00A0" + (pwn + 1)).slice(-3) + ":</span><span id='pw" + pwn + "' ondblclick='onPwDblClk(this.id);' style='border:solid 1px lightgray; padding:3px;'>" + getNewPassword(n) + "</span></div>";
+		multipw += "<div class='pw-each'><span class='line-no'>" + ("\u00A0\u00A0" + (pwn + 1)).slice(-3) + ":</span><span class='pw-eachstr' id='pw" + pwn + "' ondblclick='onPwDblClk(this.id);'>" + getNewPassword(n) + "</span></div>\n";
 
 		if( multipw.match(/ERROR\!\!\!/) != null){
 			multipw = "<div><span style='border:solid 1px lightgray;padding:3px;color:red'> ERROR!!! see settings!</span></div>";
@@ -144,9 +146,7 @@ generate<span class="mleft20">
 </div>
 <p class="fontmono"><span>Valid Character:</span><span id="allowedall" style="font-weight:normal; color:blue; background-color:antiquewhite;"></span></p>
 </div><!-- div-pwsettings -->
-<p>
-Password:
+<p>Password:</p>
 <div id="pw-disp" class="fontmono mleft20"></div>
-</p>
 
 </body>
