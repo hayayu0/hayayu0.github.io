@@ -1,12 +1,13 @@
 ﻿<!doctype html>
 <meta charset="utf-8">
 <title>Multi Password Generator</title>
-<!-- v1.0.0   Created by hayayu0  2018/03/16  based on Simple Password Generator v1.2.1 -->
+<!-- v1.1.0   Created by hayayu0  2018/04/04 -->
 <style>
 body{ font-weight:bold; }
 .fontmono{ font-family:monospace; }
 .mleft20{ margin-left:20px; }
 #pwsettings{ background-color:#fafaf7; }
+.nosel{ -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; /* future user-select:none; */ }
 </style>
 <script>
 'use strict';
@@ -19,30 +20,29 @@ function allowedPwChar(){
 
 function onPwGenBtnClk(n){
 
-	var multipw = "<table style='border-spacing:0 ;'><tbody>";
-	var multipwn = $("multipwn").value;
-
-	for(var pwn=0; pwn<multipwn; pwn++)
-	{
-		multipw += "<tr><td style='border:solid 1px lightgray;padding:3px;'>" + getNewPassword(n) + "</td></td>";
-
-		if( multipw.match(/ERROR\!\!\!/) != null){
-			multipw = "<table><tbody><tr><td style='border:solid 1px lightgray;padding:3px;color:red'> ERROR!!! </td></td>";
-			break;
-		}
-	}
-	$("pwdisp").innerHTML = multipw + "</tbody></table>";
-}
-
-function getNewPassword(n){
-
+	var multipw = "<div id='pw-result-area'>"
+	var multipwn = $("multi-pwn").value;
+	var chargrpstr = [ [ getLenN(n, $("chargrp1n1").value), getLenN(n, $("chargrp1n2").value) ], [ getLenN(n, $("chargrp2n1").value), getLenN(n, $("chargrp2n2").value) ], [ getLenN(n, $("chargrp3n1").value), getLenN(n, $("chargrp3n2").value) ] ];
 	var chars = allowedPwChar();
-	var chargrpstr = [ [ $("chargrp1n1").value, $("chargrp1n2").value ], [ $("chargrp2n1").value, $("chargrp2n2").value ], [ $("chargrp3n1").value, $("chargrp3n2").value ] ];
 	var numcon = $("numcon").value;
 	var lowcon = $("lowcon").value;
 	var alphacon = $("alphacon").value;
+
+	for(var pwn=0; pwn<multipwn; pwn++)
+	{
+		multipw += "<div style='padding-top:3px; padding-bottom:4px;'><span class='nosel' style='color:lightgray; margin-right:10px;'>" + ("\u00A0\u00A0" + (pwn + 1)).slice(-3) + ":</span><span id='pw" + pwn + "' ondblclick='onPwDblClk(this.id);' style='border:solid 1px lightgray; padding:3px;'>" + getNewPassword(n) + "</span></div>";
+
+		if( multipw.match(/ERROR\!\!\!/) != null){
+			multipw = "<div><span style='border:solid 1px lightgray;padding:3px;color:red'> ERROR!!! see settings!</span></div>";
+			break;
+		}
+	}
+	$("pw-disp").innerHTML = multipw + "</div>";
+
+  function getNewPassword(n){
+
 	var resultpw = "";
-	const maxcount = 2000 * n / 2;
+	const maxcount = 4000 * n / 2;
 	var count = 0;
 
 	function countCharInText(str, id){
@@ -78,6 +78,19 @@ function getNewPassword(n){
 		return resultpw;
 	}
 	return "ERROR!!!";
+  }
+}
+
+function getLenN(n, val){
+	if(val > 0) return val;
+	return (-n * val / 100);
+}
+
+function onPwDblClk(id){
+	var rng = document.createRange();
+	rng.selectNodeContents($(id));
+	getSelection().removeAllRanges();
+	getSelection().addRange(rng);
 }
 
 var timer = setInterval(function(){
@@ -89,23 +102,23 @@ var timer = setInterval(function(){
 </script>
 <body>
 <h3>Multi Password Generator</h3>
-<p id="pwregen">
+<p>
 generate<span class="mleft20">
 <input type="button" onclick="onPwGenBtnClk(8);" value="Length 8">
 <input type="button" onclick="onPwGenBtnClk(10);" value="Length 10">
 <input type="button" onclick="onPwGenBtnClk(12);" value="Length 12">
 </span>
-<span class="mleft20">How many passwords? : <select id="multipwn"><option value="20">20<option value="50">50<option value="100">100<option value="150" selected>150<option value="200">200<option value="300">300</select>
+<span class="mleft20">How many passwords? : <select id="multi-pwn"><option value="20">20<option value="50">50<option value="100">100<option value="150" selected>150<option value="200">200<option value="300">300</select>
 </span>
 </p>
 <div id="pwsettings">
 <div>
 <span>Group1:</span><input class="fontmono" type="text" id="grp1chars" size="30" value="ABCDEFGHJKLMNPQRSTUVWXYZ">
-	<span class="mleft20">Number of characters: <select id="chargrp1n1"><option value="0">0<option value="1" selected>1<option value="2">2</select> - <select id="chargrp1n2"><option value="0">0<option value="1">1<option value="2" selected>2<option value="3">3<option value="4">4<option value="5">5<option value="6">6<option value="7">7<option value="8">8<option value="255">No Limit</select> (min - max)</span><br>
+	<span class="mleft20">Number of characters: <select id="chargrp1n1"><option value="0">0<option value="1">1<option value="2">2<option value="3">3<option value="-25">25%</select> - <select id="chargrp1n2"><option value="0">0<option value="1">1<option value="2" selected>2<option value="3">3<option value="4">4<option value="5">5<option value="6">6<option value="7">7<option value="8">8<option value="-25" selected>25%<option value="-50">50%<option value="255">No Limit</select> (min - max)</span><br>
 <span>Group2:</span><input class="fontmono" type="text" id="grp2chars" size="30" value="_:;!$%+-=@~">
-	<span class="mleft20">Number of characters: <select id="chargrp2n1"><option value="0" selected>0<option value="1">1<option value="2">2</select> - <select id="chargrp2n2"><option value="0">0<option value="1" selected>1<option value="2">2<option value="3">3<option value="4">4<option value="5">5<option value="6">6<option value="7">7<option value="8">8<option value="255">No Limit</select> (min - max)</span><br>
+	<span class="mleft20">Number of characters: <select id="chargrp2n1"><option value="0" selected>0<option value="1">1<option value="2">2<option value="3">3<option value="-25">25%</select> - <select id="chargrp2n2"><option value="0">0<option value="1" selected>1<option value="2">2<option value="3">3<option value="4">4<option value="5">5<option value="6">6<option value="7">7<option value="8">8<option value="-25">25%<option value="-50">50%<option value="255">No Limit</select> (min - max)</span><br>
 <span>Group3:</span><input class="fontmono" type="text" id="grp3chars" size="30" value="123456789">
-	<span class="mleft20">Number of characters: <select id="chargrp3n1"><option value="0">0<option value="1" selected>1<option value="2">2</select> - <select id="chargrp3n2"><option value="0">0<option value="1">1<option value="2" selected>2<option value="3">3<option value="4">4<option value="5">5<option value="6">6<option value="7">7<option value="8">8<option value="255">No Limit</select> (min - max)</span></div>
+	<span class="mleft20">Number of characters: <select id="chargrp3n1"><option value="0">0<option value="1" selected>1<option value="2">2<option value="3">3<option value="-25">25%</select> - <select id="chargrp3n2"><option value="0">0<option value="1">1<option value="2">2<option value="3">3<option value="4">4<option value="5">5<option value="6">6<option value="7">7<option value="8">8<option value="-25" selected>25%<option value="-50">50%<option value="255">No Limit</select> (min - max)</span></div>
 <br>
 <div><span>Additional:</span>
 	<div class="mleft20 fontmono"><input type="checkbox" id="allowl">Characters l(small L) allowed</div>
@@ -117,12 +130,15 @@ generate<span class="mleft20">
 	<div class="mleft20 fontmono">
 	<select id="lowcon">
 		<option value="3">3<option value="4" selected>4<option value="5">5<option value="6">6<option value="7">7<option value="8">8
+		<option value="10">10<option value="12">12
 	</select> or more continuous lowercase letters NOT generated<br>
 	<select id="numcon">
 		<option value="3" selected>3<option value="4">4<option value="5">5<option value="6">6<option value="7">7<option value="8">8
+		<option value="10">10<option value="12">12
 	</select> or more continuous numeric characters NOT generated<br>
 	<select id="alphacon">
-		<option value="3">3<option value="4" selected>4<option value="5">5<option value="6">6<option value="7">7<option value="8">8
+		<option value="3">3<option value="4">4<option value="5" selected>5<option value="6">6<option value="7">7<option value="8">8
+		<option value="10">10<option value="12">12
 	</select> or more continuous alphabet characters NOT generated
 	</div>
 </div>
@@ -130,7 +146,7 @@ generate<span class="mleft20">
 </div><!-- div-pwsettings -->
 <p>
 Password:
-<div id="pwdisp" class="fontmono mleft20"></div>
+<div id="pw-disp" class="fontmono mleft20"></div>
 </p>
 
 </body>
