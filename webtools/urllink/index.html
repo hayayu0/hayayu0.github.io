@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Simple URL Link Creator</title>
+<script>
+'use strict';
+
+var $ = function(id){ return document.getElementById(id); };
+
+function createLink()
+{
+	var urls = $("input").value.split(/\r\n|\r|\n/);
+	var htmllink = "<p class='bo'>URL Link</p><div class='urlval'>";
+	var htmlcode = "<p class='bo'>HTML Code</p><div class='urlval'>";
+
+	for(var i=0; i<urls.length; i++)
+	{
+		if(urls[i].length == 0) continue;
+
+		htmllink += "<a href=\"" + urls[i] + "\">" + urls[i] + "</a><br>";
+		htmlcode += "<span class='elemanc'>&lt;a href=\"" + urls[i] + "\"&gt;</span>" + urls[i] + "<span class='elemanc'>&lt;/a&gt;</span><br>";
+	}
+
+	$("outputLink").innerHTML = htmllink + "</div>";
+	$("outputLinkCode").innerHTML = htmlcode + "</div>";
+}
+
+function init()
+{
+	$("input").value = "http://twitter.com/" + "\n" + "https://www.google.com/";  // example
+	$("input").select();
+}
+
+</script>
+<style>
+.bo{ font-weight:bold; }
+.elemanc{ color:darkblue; }
+.fmono{ font-family:monospace; }
+</style>
+</head>
+<body onload="init();">
+<p class="bo">Simple URL Link Creator</p>
+<p>Paste plain-text URL here</p>
+<textarea id="input" wrap="off" style="width:480px; height:120px; overflow:scroll; font-size:0.9em;">
+</textarea>
+<br>
+<input type="button" value="create link" style="padding:0 20px; margin:10px 0" onclick="createLink();">
+</div>
+<div id="outputLink" class="fmono"></div>
+<div id="outputLinkCode" class="fmono"></div>
+</body>
+</html>

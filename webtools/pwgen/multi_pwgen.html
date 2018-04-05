@@ -1,0 +1,136 @@
+﻿<!doctype html>
+<meta charset="utf-8">
+<title>Multi Password Generator</title>
+<!-- v1.0.0   Created by hayayu0  2018/03/16  based on Simple Password Generator v1.2.1 -->
+<style>
+body{ font-weight:bold; }
+.fontmono{ font-family:monospace; }
+.mleft20{ margin-left:20px; }
+#pwsettings{ background-color:#fafaf7; }
+</style>
+<script>
+'use strict';
+
+var $ = function(id){ return document.getElementById(id); };
+
+function allowedPwChar(){
+	return "abcdefghijk" + (($("allowl").checked) ? "l" : "") + "mnopqrstuvwxyz" + $("grp1chars").value + $("grp2chars").value + $("grp3chars").value;
+}
+
+function onPwGenBtnClk(n){
+
+	var multipw = "<table style='border-spacing:0 ;'><tbody>";
+	var multipwn = $("multipwn").value;
+
+	for(var pwn=0; pwn<multipwn; pwn++)
+	{
+		multipw += "<tr><td style='border:solid 1px lightgray;padding:3px;'>" + getNewPassword(n) + "</td></td>";
+
+		if( multipw.match(/ERROR\!\!\!/) != null){
+			multipw = "<table><tbody><tr><td style='border:solid 1px lightgray;padding:3px;color:red'> ERROR!!! </td></td>";
+			break;
+		}
+	}
+	$("pwdisp").innerHTML = multipw + "</tbody></table>";
+}
+
+function getNewPassword(n){
+
+	var chars = allowedPwChar();
+	var chargrpstr = [ [ $("chargrp1n1").value, $("chargrp1n2").value ], [ $("chargrp2n1").value, $("chargrp2n2").value ], [ $("chargrp3n1").value, $("chargrp3n2").value ] ];
+	var numcon = $("numcon").value;
+	var lowcon = $("lowcon").value;
+	var alphacon = $("alphacon").value;
+	var resultpw = "";
+	const maxcount = 2000 * n / 2;
+	var count = 0;
+
+	function countCharInText(str, id){
+		return str.length - str.replace((new RegExp( ("[" + $(id).value.replace(/[$%()*+-.\/?\[\\\]^{|}]/g, "\\$&") + "]"), "g")), "").length;
+	}
+
+	while(resultpw.length < n && count < maxcount)
+	{
+		resultpw += chars.charAt(Math.floor(Math.random() * chars.length)) + chars.charAt(Math.floor(Math.random() * chars.length));
+
+		if(resultpw.length == n){
+			var chargrplen = [ countCharInText(resultpw, "grp1chars"), countCharInText(resultpw, "grp2chars"), countCharInText(resultpw, "grp3chars") ];
+			var numconRegexp = (new RegExp("[0-9]{" + numcon + "}", ""));
+			var lowconRegexp = (new RegExp("[a-z]{" + lowcon + "}", ""));
+			var alphaconRegexp = (new RegExp("[a-zA-Z]{" + alphacon + "}", ""));
+
+			if(
+				chargrplen[0] < chargrpstr[0][0] || chargrplen[0] > chargrpstr[0][1] ||     // number of chargrpstr[0] characters upper/lower limit (NG)
+				chargrplen[1] < chargrpstr[1][0] || chargrplen[1] > chargrpstr[1][1] ||     // number of chargrpstr[1] characters upper/lower limit (NG)
+				chargrplen[2] < chargrpstr[2][0] || chargrplen[2] > chargrpstr[2][1] ||     // number of chargrpstr[2] characters upper/lower limit (NG)
+				resultpw.replace(numconRegexp, "").length < n ||          // contains 00..0 - 99..9 (NG)
+				resultpw.replace(lowconRegexp, "").length < n ||          // contains aa..a - zz..z (NG)
+				resultpw.replace(alphaconRegexp, "").length < n ||          // contains aa..a - ZZ..Z (NG)
+				resultpw.replace(/^[#'":;\-=,\.]|['":;,\.]$/, "").length < n  || // starting with #'":;-=,. (NG)  ending with '":;,. (NG)
+				( !$("allowbeginnum").checked && resultpw.replace(/^[0-9]/, "").length < n)  // starting with 0-9 (NG optional)
+			){
+				resultpw = "";   // reset and try again
+			}
+		}
+		count++;
+	}
+	if(count != maxcount){
+		return resultpw;
+	}
+	return "ERROR!!!";
+}
+
+var timer = setInterval(function(){
+		if($("allowedall").innerText != allowedPwChar()){
+			$("allowedall").innerText = allowedPwChar();
+		}
+	},250);
+
+</script>
+<body>
+<h3>Multi Password Generator</h3>
+<p id="pwregen">
+generate<span class="mleft20">
+<input type="button" onclick="onPwGenBtnClk(8);" value="Length 8">
+<input type="button" onclick="onPwGenBtnClk(10);" value="Length 10">
+<input type="button" onclick="onPwGenBtnClk(12);" value="Length 12">
+</span>
+<span class="mleft20">How many passwords? : <select id="multipwn"><option value="20">20<option value="50">50<option value="100">100<option value="150" selected>150<option value="200">200<option value="300">300</select>
+</span>
+</p>
+<div id="pwsettings">
+<div>
+<span>Group1:</span><input class="fontmono" type="text" id="grp1chars" size="30" value="ABCDEFGHJKLMNPQRSTUVWXYZ">
+	<span class="mleft20">Number of characters: <select id="chargrp1n1"><option value="0">0<option value="1" selected>1<option value="2">2</select> - <select id="chargrp1n2"><option value="0">0<option value="1">1<option value="2" selected>2<option value="3">3<option value="4">4<option value="5">5<option value="6">6<option value="7">7<option value="8">8<option value="255">No Limit</select> (min - max)</span><br>
+<span>Group2:</span><input class="fontmono" type="text" id="grp2chars" size="30" value="_:;!$%+-=@~">
+	<span class="mleft20">Number of characters: <select id="chargrp2n1"><option value="0" selected>0<option value="1">1<option value="2">2</select> - <select id="chargrp2n2"><option value="0">0<option value="1" selected>1<option value="2">2<option value="3">3<option value="4">4<option value="5">5<option value="6">6<option value="7">7<option value="8">8<option value="255">No Limit</select> (min - max)</span><br>
+<span>Group3:</span><input class="fontmono" type="text" id="grp3chars" size="30" value="123456789">
+	<span class="mleft20">Number of characters: <select id="chargrp3n1"><option value="0">0<option value="1" selected>1<option value="2">2</select> - <select id="chargrp3n2"><option value="0">0<option value="1">1<option value="2" selected>2<option value="3">3<option value="4">4<option value="5">5<option value="6">6<option value="7">7<option value="8">8<option value="255">No Limit</select> (min - max)</span></div>
+<br>
+<div><span>Additional:</span>
+	<div class="mleft20 fontmono"><input type="checkbox" id="allowl">Characters l(small L) allowed</div>
+	<div class="mleft20 fontmono"><input type="checkbox" id="allowbeginnum">Begin with number(0-9) allowed</div>
+</div>
+<br>
+
+<div><span>Continuous characters:</span>
+	<div class="mleft20 fontmono">
+	<select id="lowcon">
+		<option value="3">3<option value="4" selected>4<option value="5">5<option value="6">6<option value="7">7<option value="8">8
+	</select> or more continuous lowercase letters NOT generated<br>
+	<select id="numcon">
+		<option value="3" selected>3<option value="4">4<option value="5">5<option value="6">6<option value="7">7<option value="8">8
+	</select> or more continuous numeric characters NOT generated<br>
+	<select id="alphacon">
+		<option value="3">3<option value="4" selected>4<option value="5">5<option value="6">6<option value="7">7<option value="8">8
+	</select> or more continuous alphabet characters NOT generated
+	</div>
+</div>
+<p class="fontmono"><span>Valid Character:</span><span id="allowedall" style="font-weight:normal; color:blue; background-color:antiquewhite;"></span></p>
+</div><!-- div-pwsettings -->
+<p>
+Password:
+<div id="pwdisp" class="fontmono mleft20"></div>
+</p>
+
+</body>
