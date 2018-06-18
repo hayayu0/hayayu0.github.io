@@ -1,13 +1,14 @@
 ﻿<!doctype html>
 <meta charset="utf-8">
 <title>Simple Password Generator</title>
-<!-- v1.2.2  Created by hayayu0  2018/03/26 -->
+<!-- v1.2.3  Created by hayayu0  2018/06/18 -->
 <style>
 body{ font-weight:bold; }
 #pwdisp{ font-size:1.5em; color:brown; }
 .fontmono{ font-family:monospace; }
 .mleft20{ margin-left:20px; }
 #pwsettings{ background-color:#fafaf7; }
+#copiedmsg{ background-color:#e0ffe0; margin:0 0 0 10px; padding:2px 6px; visibility:hidden; }
 </style>
 <script>
 'use strict';
@@ -33,7 +34,7 @@ function onPwGenBtnClk(n){
 	}
 
 	$("pwdisp").innerText = "";
-	$("pwusage").innerText = "(Double Click and Ctrl-C to Copy)";
+	$("pwusage").innerText = "(Double Click to Copy)";
 
 	while(resultpw.length < n && count < maxcount)
 	{
@@ -72,6 +73,8 @@ function onPwDblClk(id){
 	rng.selectNodeContents($(id));
 	getSelection().removeAllRanges();
 	getSelection().addRange(rng);
+	document.execCommand('copy');
+	$("copiedmsg").style.visibility = "visible";
 }
 
 var timer = setInterval(function(){
@@ -84,7 +87,7 @@ var timer = setInterval(function(){
 <body>
 <h3>Simple Password Generator</h3>
 <p>
-Password:<span id="pwdisp" class="mleft20 fontmono" ondblclick="onPwDblClk(this.id);"></span><span id="pwusage" class="mleft20" ondblclick="onPwDblClk('pwdisp');"></span>
+Password:<span id="pwdisp" class="mleft20 fontmono" ondblclick="onPwDblClk(this.id);"></span><span id="pwusage" class="mleft20" ondblclick="onPwDblClk('pwdisp');"></span><span id="copiedmsg">COPIED</span>
 </p>
 <p id="pwregen">
 generate<span class="mleft20">
